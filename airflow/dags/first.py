@@ -11,11 +11,11 @@ def connect_to_db():
     try:
         return mysql.connector.MySQLConnection(
             user='root',
-            password=' ',
+            password='1234',
             host='localhost',
             database='guitarrasmlscrapeo',
-            port='3306'
-        )                
+            port='3307'
+        )                 
     except mysql.connector.Error as err:
         logging.error(err)
         return None
@@ -28,8 +28,10 @@ def scrapear_mercado_libre(url):
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         productos = soup.find_all('li', class_='ui-search-layout__item')
+        logging.info(f'Encontrados {len(productos)} productos en la página')
         return [{'html':str(producto)} for producto in productos]
     else:
+        logging.error(f'Error en la respuesta: {response.status_code}')
         return []
 
 #PARA CORRERLO ABRIR DOS CONSOLAS, Y CORRER 
@@ -63,7 +65,6 @@ def process(**kwargs):
     if not data:
         logging.error('No data disponible para procesar')
         return
-    
     processed_data = []
     
     for producto_dict in data:
