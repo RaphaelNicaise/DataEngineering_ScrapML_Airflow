@@ -6,15 +6,26 @@ import logging
 import mysql.connector
 from bs4 import BeautifulSoup
 import requests
+from configparser import ConfigParser
+
+parser = ConfigParser()
+parser.read('pipeline.conf')
+
+# Crear archivo de funcionalidades y conectarlo
+
+db_config = {
+     'host': parser['configDBMysql']['host'],
+     'port': parser['configDBMysql']['port'],
+     'user': parser['configDBMysql']['user'],
+     'password': parser['database']['password'],
+     'database': parser['database']['database']
+}
+
 
 def connect_to_db():
     try:
         return mysql.connector.MySQLConnection(
-            user='root',
-            password='1234',
-            host='localhost',
-            database='guitarrasmlscrapeo',
-            port='3307'
+            **db_config
         )                 
     except mysql.connector.Error as err:
         logging.error(err)
@@ -104,6 +115,7 @@ def save(**kwargs):
             logging.error('No se pudo conectar a la base de datos')    
     except mysql.connector.Error as err:
         logging.error(err)
+        
 dag = DAG( 
     'first',
     default_args=default_args,
